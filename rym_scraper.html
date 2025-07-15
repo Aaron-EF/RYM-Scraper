@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RateYourMusic Collection Data Extractor</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .instruction-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .instruction-box h3 {
+            color: #333;
+            margin-top: 0;
+        }
+        
+        .step {
+            margin: 10px 0;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .data-preview {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .album-item {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .album-title {
+            font-weight: bold;
+            color: #333;
+            font-size: 1.1em;
+        }
+        
+        .album-artist {
+            color: #666;
+            font-style: italic;
+        }
+        
+        .album-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        
+        .count-display {
+            background: #667eea;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        
+        input[type="text"] {
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 200px;
+            transition: border-color 0.3s ease;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 RateYourMusic Collection Data Extractor</h1>
+        
+        <div class="instruction-box">
+            <h3>📋 Instructions</h3>
+            <div class="step">
+                <strong>Step 1:</strong> Log into your RateYourMusic account in this browser
+            </div>
+            <div class="step">
+                <strong>Step 2:</strong> Navigate to your collection page: <code>https://rateyourmusic.com/collection/Zenkx/r0.5-5.0</code>
+            </div>
+            <div class="step">
+                <strong>Step 3:</strong> Make sure all albums are loaded (scroll to bottom if needed)
+            </div>
+            <div class="step">
+                <strong>Step 4:</strong> Click "Extract Data from Current Page" to extract data
+            </div>
+            <div class="step">
+                <strong>Step 5:</strong> If you have multiple pages, navigate to each page and repeat step 4
+            </div>
+            <div class="step">
+                <strong>Step 6:</strong> Download your data as CSV or JSON when complete
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button onclick="extractData()">Extract Data from Current Page</button>
+            <button onclick="clearData()">Clear All Data</button>
+            <button onclick="downloadCSV()">Download CSV</button>
+            <button onclick="downloadJSON()">Download JSON</button>
+            <div class="count-display">
+                Albums Found: <span id="albumCount">0</span>
+            </div>
+        </div>
+        
+        <div class="progress-bar" id="progressBar" style="display: none;">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        
+        <div id="status"></div>
+        
+        <div class="data-preview" id="dataPreview">
+            <p>No data extracted yet. Please follow the instructions above.</p>
+        </div>
+    </div>
+
+    <script>
+        let extractedData = [];
+        
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+            setTimeout(() => {
+                statusDiv.innerHTML = '';
+            }, 5000);
+        }
+        
+        function updateProgress(current, total) {
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            
+            if (current === 0) {
+                progressBar.style.display = 'block';
+            }
+            
+            const percentage = (current / total) * 100;
+            progressFill.style.width = percentage + '%';
+            
+            if (current === total) {
+                setTimeout(() => {
+                    progressBar.style.display = 'none';
+                }, 1000);
+            }
+        }
+        
+        function extractData() {
+            try {
+                // Check if we're on a RateYourMusic page
+                if (!window.location.hostname.includes('rateyourmusic.com')) {
+                    showStatus('Please navigate to your RateYourMusic collection page first!', 'error');
+                    return;
+                }
+                
+                // Look for album elements - RYM uses different selectors
+                const albumElements = document.querySelectorAll('.collection_album, .album_row, .mbgen, .or_q_album_row');
+                
+                if (albumElements.length === 0) {
+                    showStatus('No albums found on this page. Make sure you\'re on your collection page and albums are loaded.', 'error');
+                    return;
+                }
+                
+                showStatus(`Found ${albumElements.length} albums on this page. Extracting data...`, 'info');
+                updateProgress(0, albumElements.length);
+                
+                let newAlbums = 0;
+                
+                albumElements.forEach((element, index) => {
+                    setTimeout(() => {
+                        try {
+                            const albumData = extractAlbumData(element);
+                            if (albumData && !isDuplicate(albumData)) {
+                                extractedData.push(albumData);
+                                newAlbums++;
+                            }
+                            updateProgress(index + 1, albumElements.length);
+                            
+                            if (index === albumElements.length - 1) {
+                                showStatus(`Successfully extracted ${newAlbums} new albums! Total: ${extractedData.length}`, 'success');
+                                updateDisplay();
+                            }
+                        } catch (error) {
+                            console.error('Error extracting album data:', error);
+                        }
+                    }, index * 50); // Small delay to prevent overwhelming the browser
+                });
+                
+            } catch (error) {
+                showStatus('Error extracting data: ' + error.message, 'error');
+                console.error('Extraction error:', error);
+            }
+        }
+        
+        function extractAlbumData(element) {
+            const data = {};
+            
+            try {
+                // Album title and artist - try multiple selectors
+                const titleElement = element.querySelector('.album_title a, .album a, .mbgen a');
+                const artistElement = element.querySelector('.album_artist a, .artist a');
+                
+                data.albumTitle = titleElement ? titleElement.textContent.trim() : '';
+                data.artistName = artistElement ? artistElement.textContent.trim() : '';
+                
+                // Release date
+                const dateElement = element.querySelector('.album_date, .date');
+                data.releaseDate = dateElement ? dateElement.textContent.trim() : '';
+                
+                // Rating
+                const ratingElement = element.querySelector('.rating, .mbgen_rating, .or_q_rating_date_num');
+                data.userRating = ratingElement ? ratingElement.textContent.trim() : '';
+                
+                // RYM Rating
+                const rymRatingElement = element.querySelector('.rym_rating, .avgrating');
+                data.rymRating = rymRatingElement ? rymRatingElement.textContent.trim() : '';
+                
+                // Genres
+                const genreElements = element.querySelectorAll('.genre, .mbgen_genre');
+                data.genres = Array.from(genreElements).map(el => el.textContent.trim()).join(', ');
+                
+                // Get additional data by following the album link if available
+                const albumLink = titleElement ? titleElement.getAttribute('href') : '';
+                if (albumLink) {
+                    data.albumUrl = 'https://rateyourmusic.com' + albumLink;
+                }
+                
+                // If we have at least title and artist, consider it valid
+                if (data.albumTitle && data.artistName) {
+                    return data;
+                }
+                
+            } catch (error) {
+                console.error('Error extracting individual album data:', error);
+            }
+            
+            return null;
+        }
+        
+        function isDuplicate(newAlbum) {
+            return extractedData.some(existing => 
+                existing.albumTitle === newAlbum.albumTitle && 
+                existing.artistName === newAlbum.artistName
+            );
+        }
+        
+        function updateDisplay() {
+            const preview = document.getElementById('dataPreview');
+            const count = document.getElementById('albumCount');
+            
+            count.textContent = extractedData.length;
+            
+            if (extractedData.length === 0) {
+                preview.innerHTML = '<p>No data extracted yet. Please follow the instructions above.</p>';
+                return;
+            }
+            
+            let html = '<h3>Extracted Albums Preview (showing last 10):</h3>';
+            const recentAlbums = extractedData.slice(-10);
+            
+            recentAlbums.forEach(album => {
+                html += `
+                    <div class="album-item">
+                        <div class="album-title">${album.albumTitle}</div>
+                        <div class="album-artist">by ${album.artistName}</div>
+                        <div class="album-details">
+                            <div><strong>Release Date:</strong> ${album.releaseDate}</div>
+                            <div><strong>Your Rating:</strong> ${album.userRating}</div>
+                            <div><strong>RYM Rating:</strong> ${album.rymRating}</div>
+                            <div><strong>Genres:</strong> ${album.genres}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            preview.innerHTML = html;
+        }
+        
+        function clearData() {
+            extractedData = [];
+            updateDisplay();
+            showStatus('All data cleared.', 'info');
+        }
+        
+        function downloadCSV() {
+            if (extractedData.length === 0) {
+                showStatus('No data to download. Please extract some data first.', 'error');
+                return;
+            }
+            
+            const headers = ['Album Title', 'Artist Name', 'Release Date', 'Your Rating', 'RYM Rating', 'Genres', 'Album URL'];
+            const csvContent = [
+                headers.join(','),
+                ...extractedData.map(album => [
+                    `"${album.albumTitle}"`,
+                    `"${album.artistName}"`,
+                    `"${album.releaseDate}"`,
+                    `"${album.userRating}"`,
+                    `"${album.rymRating}"`,
+                    `"${album.genres}"`,
+                    `"${album.albumUrl || ''}"`
+                ].join(','))
+            ].join('\n');
+            
+            downloadFile(csvContent, 'rateyourmusic_collection.csv', 'text/csv');
+            showStatus('CSV file downloaded successfully!', 'success');
+        }
+        
+        function downloadJSON() {
+            if (extractedData.length === 0) {
+                showStatus('No data to download. Please extract some data first.', 'error');
+                return;
+            }
+            
+            const jsonContent = JSON.stringify(extractedData, null, 2);
+            downloadFile(jsonContent, 'rateyourmusic_collection.json', 'application/json');
+            showStatus('JSON file downloaded successfully!', 'success');
+        }
+        
+        function downloadFile(content, filename, contentType) {
+            const blob = new Blob([content], { type: contentType });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            showStatus('Ready to extract data. Please follow the instructions above.', 'info');
+        });
+    </script>
+</body>
+</html>
