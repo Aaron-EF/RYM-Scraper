@@ -1,4 +1,4 @@
-    <script>
+
         let extractedData = [];
         
         function showStatus(message, type = 'info') {
@@ -215,4 +215,3 @@
         document.addEventListener('DOMContentLoaded', function() {
             showStatus('Ready to extract data. Please follow the instructions above.', 'info');
         });
-    </script>
